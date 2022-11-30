@@ -8,15 +8,28 @@ Jyotikrishna Dass*, Shang Wu*, Huihong Shi*, Chaojian Li, Zhifan Ye, Zhongfeng W
 (*Equal contribution)
 
 Accepted by [HPCA 2023](https://hpca-conf.org/2023/). More Info:
-\[ [**Paper**](https://arxiv.org/abs/2211.05109) | [**Slide**]() | [**Github**](https://github.com/GATECH-EIC/ViTaLiTy) \]
+\[ [**Paper**](https://arxiv.org/abs/2211.05109) | [**Slide**]() | [**GitHub**](https://github.com/GATECH-EIC/ViTaLiTy) \]
 
 ---
 
-## Overview of the Co-Design Framework
+## Overview of the ViTALiTy Framework
 
-We propose a low-rank and sparse approximation algorithm and accelerator Co-Design framework dubbed ViTALiTy.
+We propose a low-rank and sparse approximation algorithm and accelerator co-design framework dubbed ViTALiTy.
 
-* ***On the algorithm level***, 
+* ***On the algorithm level***, we propose a linear attention
+for reducing the computational and memory cost by
+decoupling the vanilla softmax attention into its corre-
+sponding “weak” and “strong” Taylor attention maps.
+Unlike the vanilla attentions, the linear attention in
+VITALITY generates a global context matrix G by
+multiplying the keys with the values. Then, we unify
+the low-rank property of the linear attention with a
+sparse approximation of “strong” attention for training
+the ViT model. Here, the low-rank component of our
+VITALITY attention captures global information with
+a linear complexity, while the sparse component boosts
+the accuracy of linear attention model by enhancing its
+local feature extraction capacity.
 
 <p align="center">
 <img src="./figures/ViTALiTY-workflow.png" width="800">
@@ -25,7 +38,20 @@ We propose a low-rank and sparse approximation algorithm and accelerator Co-Desi
 <img src="./figures/TaylorAttentionFlow2.png" width="400">
 </p>
 
-* ***On the hardware level***, 
+
+* ***On the hardware level***, we develop a dedicated ac-
+celerator to better leverage the algorithmic properties
+of VITALITY’s linear attention, where only a low-
+rank component is executed during inference favoring
+hardware efficiency. Specifically, VITALITY’s acceler-
+ator features a chunk-based design integrating both a
+systolic array tailored for matrix multiplications and
+pre/post-processors customized for VITALITY atten-
+tions’ pre/post-processing steps. Furthermore, we adopt
+an intra-layer pipeline design to leverage the intra-layer
+data dependency for enhancing the overall throughput,
+together with a down-forward accumulation dataflow for
+the systolic array to improve hardware efficiency.
 
 <p align="center">
 <img src="./figures/hardware_overall.png" width="800">
@@ -33,6 +59,7 @@ We propose a low-rank and sparse approximation algorithm and accelerator Co-Desi
 
 ## How to run?
 ### Environment set up
+
     pip install -r requirment.txt
 ### Training (DeiT-Tiny with vanilla softmax)
     cd src
@@ -46,3 +73,6 @@ We propose a low-rank and sparse approximation algorithm and accelerator Co-Desi
 ### Inference (DeiT-Tiny with Vitality)
     cd src
     python -m torch.distributed.launch --nproc_per_node=8 --use_env main.py --model deit_tiny_patch16_224 --lr 1e-4 --batch-size 256 --data-path YOUR IMAGENET PATH --output_dir '' --vitality --eval
+
+## Acknowledgment
+This codebase is inspired from https://github.com/facebookresearch/deit
