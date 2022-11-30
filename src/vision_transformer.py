@@ -110,7 +110,8 @@ class Attention(nn.Module):
         B, N, C = x.shape
         qkv = self.qkv(x).reshape(B, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
         q, k, v = qkv[0], qkv[1], qkv[2]   # make torchscript happy (cannot use tensor as tuple)
-
+        
+        # The proposed vitality algorithm on paper Algorithm 1
         if self.vitality:
             quant_q, quant_k = self.quant(q, 4), self.quant(k, 4)
             quant_attn = (quant_q @ quant_k .transpose(-2, -1)) * self.scale
