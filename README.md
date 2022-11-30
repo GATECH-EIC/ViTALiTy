@@ -19,13 +19,13 @@ We propose a low-rank and sparse approximation algorithm and accelerator Co-Desi
 * ***On the algorithm level***, 
 
 <p align="center">
-<img src="./figures/Algorithm.png" width="800">
+<img src="./figures/ViTALiTY-workflow.png" width="800">
 </p>
 
 * ***On the hardware level***, 
 
 <p align="center">
-<img src="./figures/Hardware.png" width="800">
+<img src="./figures/hardware_overall.png" width="800">
 </p>
 
 ## How to run?
