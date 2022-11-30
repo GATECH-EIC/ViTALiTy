@@ -137,8 +137,7 @@ def get_args_parser():
     parser.add_argument('--finetune', default='', help='finetune from checkpoint')
 
     # Dataset parameters
-    # parser.add_argument('--data-path', default='/scratch/cl114/ILSVRC/Data/CLS-LOC/', type=str, help='dataset path')
-    parser.add_argument('--data-path', default='/data2/ILSVRC/Data/CLS-LOC', type=str, help='dataset path')
+    parser.add_argument('--data-path', default='', type=str, help='dataset path')
     
     parser.add_argument('--data-set', default='IMNET', choices=['CIFAR', 'IMNET', 'INAT', 'INAT19'],
                         type=str, help='Image Net dataset path')
