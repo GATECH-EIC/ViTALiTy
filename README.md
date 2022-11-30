@@ -22,7 +22,7 @@ We propose a low-rank and sparse approximation algorithm and accelerator Co-Desi
 <img src="./figures/ViTALiTY-workflow.png" width="800">
 </p>
 <p align="center">
-<img src="./figures/TaylorAttentionFlow2.png" width="800">
+<img src="./figures/TaylorAttentionFlow2.png" width="400">
 </p>
 
 * ***On the hardware level***, 
