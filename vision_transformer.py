@@ -90,7 +90,7 @@ class FNetBlock(nn.Module):
         return x
 
 class Attention(nn.Module):
-    def __init__(self, dim, SMD=False, num_heads=8, qkv_bias=False, attn_drop=0., proj_drop=0.):
+    def __init__(self, dim, vitality=False, num_heads=8, qkv_bias=False, attn_drop=0., proj_drop=0.):
         super().__init__()
         self.num_heads = num_heads
         head_dim = dim // num_heads
@@ -100,8 +100,8 @@ class Attention(nn.Module):
         self.attn_drop = nn.Dropout(attn_drop)
         self.proj = nn.Linear(dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
-        self.SMD = SMD
-        if SMD:
+        self.vitality = vitality
+        if self.vitality:
             self.quant = QuantMeasure(4, shape_measure=(1,1,1), flatten_dims=(1,-1))
             self.quant_16 = QuantMeasure(16, shape_measure=(1,1,1), flatten_dims=(1,-1))
 
@@ -111,38 +111,17 @@ class Attention(nn.Module):
         qkv = self.qkv(x).reshape(B, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
         q, k, v = qkv[0], qkv[1], qkv[2]   # make torchscript happy (cannot use tensor as tuple)
 
-        if self.SMD:
-            # kapa = attn.detach()
-            # kapa = kapa - kapa.mean(dim=-1).unsqueeze(-1)
+        if self.vitality:
             quant_q, quant_k = self.quant(q, 4), self.quant(k, 4)
             quant_attn = (quant_q @ quant_k .transpose(-2, -1)) * self.scale
-            #quant_attn = (q @ k .transpose(-2, -1)) * self.scale
             quant_attn = quant_attn.softmax(dim=-1)
-            mask = quant_attn > 0.02
+            mask = quant_attn > 0.002
             sparse = mask * quant_attn
-
-            sparsity = torch.sum(mask) / torch.numel(mask)
-            sparsity = sparsity.item()
-            sparse_list.append(sparsity)
             
-            q = q - q.mean(dim=-1, keepdim=True)
             k = k - k.mean(dim=-1, keepdim=True)
-            #v = v - v.mean(dim=-1, keepdim=True)
-
-            #q = normalize(q, p=2.0) # Col-wise normalize
-            #k = normalize(k, p=2.0) # Col-wise normalize
             
             kv = k.transpose(-2, -1) @ v
-            #kv = kv - kv.mean(dim=-1, keepdim=True)
-            '''
-            mask = kv > 0.02
-            sparsity = torch.sum(mask) / torch.numel(mask)
-            sparsity = sparsity.item()
-            if ddcount == 0:
-                sparse_list.append(sparsity)
-            sparse = mask * kv
-            kv = kv + sparse
-            '''
+
             attn = (sparse @ v + ( q @ kv )) * self.scale
             drop_attn = self.attn_drop(attn)
             x = drop_attn.transpose(1, 2).reshape(B, N, C)
@@ -160,11 +139,11 @@ class Attention(nn.Module):
 class Block(nn.Module):
 
     def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=False, drop=0., attn_drop=0.,
-                 drop_path=0., act_layer=nn.GELU, norm_layer=nn.LayerNorm):
+                 drop_path=0., act_layer=nn.GELU, norm_layer=nn.LayerNorm, vitality=False):
         super().__init__()
         self.norm1 = norm_layer(dim)
         #self.attn = FNetBlock()
-        self.attn = Attention(dim, SMD=True, num_heads=num_heads, qkv_bias=qkv_bias, attn_drop=attn_drop, proj_drop=drop)
+        self.attn = Attention(dim, vitality=vitality, num_heads=num_heads, qkv_bias=qkv_bias, attn_drop=attn_drop, proj_drop=drop)
         # NOTE: drop path for stochastic depth, we shall see if this is better than dropout here
         self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
         self.norm2 = norm_layer(dim)
@@ -192,7 +171,7 @@ class VisionTransformer(nn.Module):
     def __init__(self, img_size=224, patch_size=16, in_chans=3, num_classes=1000, embed_dim=768, depth=12,
                  num_heads=12, mlp_ratio=4., qkv_bias=True, representation_size=None, distilled=False,
                  drop_rate=0., attn_drop_rate=0., drop_path_rate=0., embed_layer=PatchEmbed, norm_layer=None,
-                 act_layer=None, weight_init=''):
+                 act_layer=None, weight_init='', vitality=False):
         """
         Args:
             img_size (int, tuple): input image size
@@ -233,7 +212,7 @@ class VisionTransformer(nn.Module):
         self.blocks = nn.Sequential(*[
             Block(
                 dim=embed_dim, num_heads=num_heads, mlp_ratio=mlp_ratio, qkv_bias=qkv_bias, drop=drop_rate,
-                attn_drop=attn_drop_rate, drop_path=dpr[i], norm_layer=norm_layer, act_layer=act_layer)
+                attn_drop=attn_drop_rate, drop_path=dpr[i], norm_layer=norm_layer, act_layer=act_layer, vitality=vitality)
             for i in range(depth)])
         self.norm = norm_layer(embed_dim)
          

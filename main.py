@@ -137,8 +137,8 @@ def get_args_parser():
     parser.add_argument('--finetune', default='', help='finetune from checkpoint')
 
     # Dataset parameters
-    parser.add_argument('--data-path', default='/scratch/cl114/ILSVRC/Data/CLS-LOC/', type=str, help='dataset path')
-    #parser.add_argument('--data-path', default='/data1/ImageNet/ILSVRC/Data/CLS-LOC/', type=str, help='dataset path')
+    # parser.add_argument('--data-path', default='/scratch/cl114/ILSVRC/Data/CLS-LOC/', type=str, help='dataset path')
+    parser.add_argument('--data-path', default='/data2/ILSVRC/Data/CLS-LOC', type=str, help='dataset path')
     
     parser.add_argument('--data-set', default='IMNET', choices=['CIFAR', 'IMNET', 'INAT', 'INAT19'],
                         type=str, help='Image Net dataset path')
@@ -170,6 +170,8 @@ def get_args_parser():
 
     parser.add_argument('--finetune_layer', action='store_true', help='finetune layer norm part')
     parser.add_argument('--layer_lr', type=float, default=1e-3, help='layer norm learning rate (default: 1e-3)')
+
+    parser.add_argument('--vitality', action='store_true')
 
     return parser
 
@@ -251,6 +253,7 @@ def main(args):
         drop_rate=args.drop,
         drop_path_rate=args.drop_path,
         drop_block_rate=None,
+        vitality=args.vitality
     )
 
     if args.finetune:
