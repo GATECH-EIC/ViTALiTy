@@ -16,20 +16,7 @@ Accepted by [HPCA 2023](https://hpca-conf.org/2023/). More Info:
 
 We propose a low-rank and sparse approximation algorithm and accelerator co-design framework dubbed ViTALiTy.
 
-* ***On the algorithm level***, we propose a linear attention
-for reducing the computational and memory cost by
-decoupling the vanilla softmax attention into its corre-
-sponding “weak” and “strong” Taylor attention maps.
-Unlike the vanilla attentions, the linear attention in
-VITALITY generates a global context matrix G by
-multiplying the keys with the values. Then, we unify
-the low-rank property of the linear attention with a
-sparse approximation of “strong” attention for training
-the ViT model. Here, the low-rank component of our
-VITALITY attention captures global information with
-a linear complexity, while the sparse component boosts
-the accuracy of linear attention model by enhancing its
-local feature extraction capacity.
+* ***On the algorithm level***, we propose a linear attention for reducing the computational and memory cost by decoupling the vanilla softmax attention into its corresponding “weak” and “strong” Taylor attention maps. Unlike the vanilla attentions, the linear attention in VITALITY generates a global context matrix G by multiplying the keys with the values. Then, we unify the low-rank property of the linear attention with a sparse approximation of “strong” attention for training the ViT model. Here, the low-rank component of our VITALITY attention captures global information with a linear complexity, while the sparse component boosts the accuracy of linear attention model by enhancing its local feature extraction capacity.
 
 <p align="center">
 <img src="./figures/ViTALiTY-workflow.png" width="800">
@@ -39,19 +26,7 @@ local feature extraction capacity.
 </p>
 
 
-* ***On the hardware level***, we develop a dedicated ac-
-celerator to better leverage the algorithmic properties
-of VITALITY’s linear attention, where only a low-
-rank component is executed during inference favoring
-hardware efficiency. Specifically, VITALITY’s acceler-
-ator features a chunk-based design integrating both a
-systolic array tailored for matrix multiplications and
-pre/post-processors customized for VITALITY atten-
-tions’ pre/post-processing steps. Furthermore, we adopt
-an intra-layer pipeline design to leverage the intra-layer
-data dependency for enhancing the overall throughput,
-together with a down-forward accumulation dataflow for
-the systolic array to improve hardware efficiency.
+* ***On the hardware level***, we develop a dedicated accelerator to better leverage the algorithmic properties of VITALITY’s linear attention, where only a low-rank component is executed during inference favoring hardware efficiency. Specifically, VITALITY’s accelerator features a chunk-based design integrating both a systolic array tailored for matrix multiplications and pre/post-processors customized for VITALITY attentions’ pre/post-processing steps. Furthermore, we adopt an intra-layer pipeline design to leverage the intra-layer data dependency for enhancing the overall throughput together with a down-forward accumulation dataflow for the systolic array to improve hardware efficiency.
 
 <p align="center">
 <img src="./figures/hardware_overall.png" width="800">
