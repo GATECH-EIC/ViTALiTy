@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from drop import DropPath
 from patch_embed import PatchEmbed
-from mlp import Mlp, DwMlp
+from mlp import Mlp
 import math
 import warnings
 from torch.nn.init import _calculate_fan_in_and_fan_out
@@ -150,7 +150,6 @@ class Block(nn.Module):
         self.norm2 = norm_layer(dim)
         mlp_hidden_dim = int(dim * mlp_ratio)
         #self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
-        self.mlp = DwMlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop, bn="norm")
 
     def forward(self, x):
         x, attn_list = x
