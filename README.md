@@ -22,8 +22,8 @@ We propose a low-rank and sparse approximation algorithm and accelerator co-desi
 <img src="./figures/ViTALiTY-workflow.png" width="800">
 </p>
 <p align = "center">
-*Fig.1 - ViTALiTy workflow comprising the proposed (Low-Rank) Linear Taylor attention (order, m = 1): (i) Higher-order Taylor terms (m > 1)
-when added results in vanilla softmax attention score, (ii) Training phase (unifying low-rank and sparse approximation) where higher-order Taylor terms are approximated as Sparse attention (computed using SANGER [28]), and (iii) Inference phase that uses only the (Low-Rank) Linear Taylor attention.*
+* Fig.1 - ViTALiTy workflow comprising the proposed (Low-Rank) Linear Taylor attention (order, m = 1): (i) Higher-order Taylor terms (m > 1)
+when added results in vanilla softmax attention score, (ii) Training phase (unifying low-rank and sparse approximation) where higher-order Taylor terms are approximated as Sparse attention (computed using SANGER [28]), and (iii) Inference phase that uses only the (Low-Rank) Linear Taylor attention. *
 </p>
 
 
@@ -31,7 +31,7 @@ when added results in vanilla softmax attention score, (ii) Training phase (unif
 <img src="./figures/TaylorAttentionFlow2.png" width="400">
 </p>
 <p align = "center">
-*Fig.2 - Computational steps (a) vanilla Softmax Attention and (b) our Taylor attention (see Algorithm 1), where the global context matrix G provides linear computation and memory benefits over the vanilla quadratic QK^T.*
+* Fig.2 - Computational steps (a) vanilla Softmax Attention and (b) our Taylor attention (see Algorithm 1), where the global context matrix G provides linear computation and memory benefits over the vanilla quadratic QK^T. *
 </p>
 
 * ***On the hardware level***, we develop a dedicated accelerator to better leverage the algorithmic properties of ViTALiTy’s linear attention, where only a low-rank component is executed during inference favoring hardware efficiency. Specifically, ViTALiTy's accelerator features a chunk-based design integrating both a systolic array tailored for matrix multiplications and pre/post-processors customized for ViTALiTy attentions’ pre/post-processing steps. Furthermore, we adopt an intra-layer pipeline design to leverage the intra-layer data dependency for enhancing the overall throughput together with a down-forward accumulation dataflow for the systolic array to improve hardware efficiency.
@@ -40,7 +40,7 @@ when added results in vanilla softmax attention score, (ii) Training phase (unif
 <img src="./figures/hardware_overall.png" width="800">
 </p>
 <p align = "center">
-*Fig.3 - An illustration of our VITALITY accelerator, which adopts four memory hierarchies (i.e., DRAM, SRAM, NoC, and Regs) to enhance data locality and multiple chunks/sub-processors consisting of a few pre/post-processors and a systolic array to accelerate dedicated operations. Specifically, the pre-processors include an accumulator array for performing column(token)-wise summation, and a divider array and a adder array for conducting element-wise divisions and additions, respectively; In addition, the systolic array (SA) is partitioned into a smaller sub-array named SA-Diag to compute the matrix and diagonal matrix multiplications (i.e., QkˆTsum) considering their smaller number of multiplications, and a larger sub-array dubbed SA-General to process the remaining matrix multiplications (i.e., G = KˆT V and QG).*
+* Fig.3 - An illustration of our VITALITY accelerator, which adopts four memory hierarchies (i.e., DRAM, SRAM, NoC, and Regs) to enhance data locality and multiple chunks/sub-processors consisting of a few pre/post-processors and a systolic array to accelerate dedicated operations. Specifically, the pre-processors include an accumulator array for performing column(token)-wise summation, and a divider array and a adder array for conducting element-wise divisions and additions, respectively; In addition, the systolic array (SA) is partitioned into a smaller sub-array named SA-Diag to compute the matrix and diagonal matrix multiplications (i.e., QkˆTsum) considering their smaller number of multiplications, and a larger sub-array dubbed SA-General to process the remaining matrix multiplications (i.e., G = KˆT V and QG). *
 </p>
 
 ## How to run?
